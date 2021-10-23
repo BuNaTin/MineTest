@@ -34,14 +34,25 @@ namespace MineTest {
 	}
 
     int Window::finalization() {
+
+
         glfwTerminate();
 
-        CONSOLE_LOG_INFO("[Window] Terminate window");
+        CONSOLE_LOG_INFO("[Window] Close window");
+
         return 0;
+    }
+
+    GLFWwindow* Window::get() {
+        return m_pwindow;
     }
     
     bool Window::shouldClose() {
         return glfwWindowShouldClose(m_pwindow);
+    }
+
+    void Window::shouldClose(bool arg) {
+        glfwSetWindowShouldClose(m_pwindow, arg);
     }
 
     void Window::swapBuffers() {

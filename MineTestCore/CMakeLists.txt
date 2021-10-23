@@ -6,10 +6,14 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Window.hpp
     includes/MineTestCore/Log.hpp
     includes/MineTestCore/Application.hpp
+    includes/MineTestCore/Events.hpp
+    includes/MineTestCore/myglad.hpp
+
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
     src/MineTestCore/Application.cpp
+    src/MineTestCore/Events.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
 )
