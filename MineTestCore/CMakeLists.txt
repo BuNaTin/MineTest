@@ -8,14 +8,17 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Application.hpp
     includes/MineTestCore/Events.hpp
     includes/MineTestCore/myglad.hpp
+    includes/MineTestCore/Graphics/Shader.hpp
 
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
     src/MineTestCore/Application.cpp
     src/MineTestCore/Events.cpp
+    src/MineTestCore/Graphics/Shader.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
+    
 )
 
 set(ENGINE_ALL_INCLUDES

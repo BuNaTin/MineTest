@@ -6,6 +6,8 @@
 #include <MineTestCore/Window.hpp>
 #include <MineTestCore/Events.hpp>
 #include <MineTestCore/Log.hpp>
+#include <MineTestCore/Graphics/Shader.hpp>
+
 
 // should delete
 #include <GLFW/glfw3.h>
@@ -27,6 +29,16 @@ namespace MineTest {
 
 	int Application::start() {
 
+        float vertices[] = {
+            0.0f, 0.0f, 0.0f,
+            1.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f
+        };
+
+        Shader* shader = load_shader("C:/Users/PC/Documents/projects/MineTest/MineTest/MineTestCore/res/main.glslv", "C:/Users/PC/Documents/projects/MineTest/MineTest/MineTestCore/res/main.glslf");
+        if (shader == nullptr) {
+            CONSOLE_LOG_ERROR("[Shader] Wrong shader program");
+        }
 
         // should delete
         glad::glClearColor(0, 1, 0, 1);
