@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include <MineTestCore/myglad.hpp>
-#include <MineTestCore/ResourceManager.hpp>
+#include <MineTestCore/ResourceManager/ResourceManager.hpp>
 #include <MineTestCore/Log.hpp>
 #include <GLFW/glfw3.h>
 

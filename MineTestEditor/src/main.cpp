@@ -1,6 +1,8 @@
 
 #include <MineTestCore/Application.hpp>
 
+#include <MineTestCore/ResourceManager/stb_image.hpp>
+
 
 class MyApp : public MineTest::Application {
 public:
@@ -17,6 +19,5 @@ int main(int argc, char* argv[]) {
 	application.start();
 
 	application.finalization();
-
 	return 0;
 }

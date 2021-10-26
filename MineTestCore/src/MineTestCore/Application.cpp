@@ -6,10 +6,10 @@
 #include <MineTestCore/Window.hpp>
 #include <MineTestCore/Events.hpp>
 #include <MineTestCore/Log.hpp>
-#include <MineTestCore/ResourceManager.hpp>
+#include <MineTestCore/ResourceManager/ResourceManager.hpp>
 #include <MineTestCore/Graphics/Shader.hpp>
 
-#include <MineTestCore/Graphics/std_image.hpp>
+#include <MineTestCore/ResourceManager/stb_image.hpp>
 
 
 
@@ -45,7 +45,9 @@ namespace MineTest {
         if (shader == nullptr) {
             CONSOLE_LOG_ERROR("[Shader] Wrong shader program");
         }
+        PNG pic = ResourceManager::read_PNG("2.png");
 
+        CONSOLE_LOG_INFO("{0}, {1}", pic._w, pic._h);
         // create VAO
         GLuint VAO, VBO;
         glGenVertexArrays(1, &VAO);
@@ -64,7 +66,7 @@ namespace MineTest {
         glBindVertexArray(0);
 
         // should delete
-        glad::glClearColor(0, 1, 0, 1);
+        glad::glClearColor(0.7f, 0.7f, 0.0f, 1.0f);
         //
 
         while (!MineTest::Window::shouldClose())
@@ -82,7 +84,7 @@ namespace MineTest {
             }
             
             if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
-                glad::glClearColor(1, 0, 0, 1);
+                glad::glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
             }
 
             glClear(GL_COLOR_BUFFER_BIT);

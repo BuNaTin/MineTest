@@ -21,7 +21,7 @@ namespace MineTest {
 			::glClear(GL_COLOR_BUFFER_BIT);
 		}
 
-		static void glClearColor(int x, int y, int z, int w) {
+		static void glClearColor(float x, float y, float z, float w) {
 			::glClearColor(x, y, z, w);
 		}
 	

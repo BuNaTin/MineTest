@@ -1,11 +1,18 @@
 
-#include "../includes/MineTestCore/ResourceManager.hpp"
+#include "../includes/MineTestCore/ResourceManager/ResourceManager.hpp"
 
 #include <MineTestCore/Log.hpp>
+
+
+#include <MineTestCore/Graphics/PNG.hpp>
 
 #include <string>
 #include <fstream>
 #include <sstream>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <MineTestCore/ResourceManager/stb_image.hpp>
+
 
 namespace MineTest{
 
@@ -39,7 +46,7 @@ namespace MineTest{
 		std::ifstream ShaderFile;
 		std::stringstream ShaderStream;
 
-		std::string fileName = m_currentFolder + "\\res\\" + shader_name;
+		std::string fileName = m_currentFolder + "\\res\\shader\\" + shader_name;
 
 		ShaderFile.open(fileName);
 
@@ -54,5 +61,20 @@ namespace MineTest{
 		Code = ShaderStream.str();
 
 		return Code;
+	}
+
+	PNG ResourceManager::read_PNG(const std::string& PNGname) {
+		std::string PNGfileName = m_currentFolder + "\\res\\img\\" + PNGname;
+		PNG pic;
+		pic._type = PNGtype::RGBA;
+		int comp;
+		pic._data = stbi_load(PNGfileName.c_str(), &pic._w, &pic._h, &comp, static_cast<int>(pic._type));
+		if (pic._data == nullptr) {
+			CONSOLE_LOG_ERROR("[ResourceManager] Can't load PNG");
+		}
+		if (comp != 4) {
+			CONSOLE_LOG_ERROR("[ResourceManager] Texture is not RGBA ( level = {0} )", comp);
+		}
+		return pic;
 	}
 }
