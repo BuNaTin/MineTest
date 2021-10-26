@@ -8,13 +8,16 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Application.hpp
     includes/MineTestCore/Events.hpp
     includes/MineTestCore/myglad.hpp
+    includes/MineTestCore/ResourceManager.hpp
     includes/MineTestCore/Graphics/Shader.hpp
+    includes/MineTestCore/Graphics/std_image.hpp
 
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
     src/MineTestCore/Application.cpp
     src/MineTestCore/Events.cpp
+    src/MineTestCore/ResourceManager.cpp
     src/MineTestCore/Graphics/Shader.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
@@ -54,9 +57,18 @@ add_subdirectory(
 )
 target_link_libraries(${CORE_NAME} PRIVATE spdlog)
 
-
 add_subdirectory(
     ../external/glad
     ${CMAKE_CURRENT_BINARY_DIR}/glad
 )
 target_link_libraries(${CORE_NAME} PRIVATE glad)
+
+
+
+
+#add_subdirectory(
+#    ../external/openCV
+#    ${CMAKE_CURRENT_BINARY_DIR}/openCV
+#)
+#target_link_libraries(${CORE_NAME} PRIVATE openCV)
+

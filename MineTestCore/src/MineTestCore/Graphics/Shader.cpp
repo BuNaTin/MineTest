@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include <MineTestCore/myglad.hpp>
+#include <MineTestCore/ResourceManager.hpp>
 #include <MineTestCore/Log.hpp>
 #include <GLFW/glfw3.h>
 
@@ -21,34 +22,9 @@ namespace MineTest {
         glUseProgram(m_id);
     }
     
-    Shader* load_shader(const std::string vertexFile, const std::string fragmentFile) {
-        std::string vertexCode;
-        std::string fragmentCode;
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
-        std::stringstream vShaderStream;
-        std::stringstream fShaderStream;
-
-        vShaderFile.open(vertexFile);
-        fShaderFile.open(fragmentFile);
-
-        if (!vShaderFile.is_open()) {
-            CONSOLE_LOG_CRITICAL("[Shader] Can't load vertex shader");
-            return nullptr;
-        }
-        if (!fShaderFile.is_open()) {
-            CONSOLE_LOG_CRITICAL("[Shader] Can't load fragment shader");
-            return nullptr;
-        }
-
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-
-        vShaderFile.close();
-        fShaderFile.close();
-
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
+    Shader* make_shader(const std::string vertexFile, const std::string fragmentFile) {
+        std::string vertexCode = ResourceManager::read_shader(vertexFile);
+        std::string fragmentCode = ResourceManager::read_shader(fragmentFile);
 
         const GLchar* vShaderCode = vertexCode.c_str();
         const GLchar* fShaderCode = fragmentCode.c_str();
