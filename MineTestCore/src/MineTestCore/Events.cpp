@@ -25,11 +25,11 @@ namespace MineTest {
 
 	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
 		if (!Events::m_cursor_locked) {
-			Events::m_deltaX += xpos - Events::m_x;
-			Events::m_deltaY += ypos - Events::m_y;
+			Events::m_deltaX += static_cast<float>(xpos - Events::m_x);
+			Events::m_deltaY += static_cast<float>(ypos - Events::m_y);
 		}
-		Events::m_x = xpos;
-		Events::m_y = ypos;
+		Events::m_x = static_cast<float>(xpos);
+		Events::m_y = static_cast<float>(ypos);
 	}
 
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int mode) {

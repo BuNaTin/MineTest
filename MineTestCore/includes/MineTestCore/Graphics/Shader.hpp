@@ -15,6 +15,6 @@ namespace MineTest {
         unsigned int m_id;
     };
 
-    /* extern */Shader* make_shader(const std::string vertexFile, const std::string fragmentFile);
+    Shader* make_shader(const std::string vertexFile, const std::string fragmentFile);
 
 }

@@ -51,7 +51,7 @@ namespace MineTest{
 		ShaderFile.open(fileName);
 
 		if (!ShaderFile.is_open()) {
-			CONSOLE_LOG_CRITICAL("[Shader] Can't load shader");
+			CONSOLE_LOG_CRITICAL("[Shader] Can't load shader {0}", shader_name);
 			return "";
 		}
 		ShaderStream << ShaderFile.rdbuf();
@@ -70,10 +70,11 @@ namespace MineTest{
 		int comp;
 		pic._data = stbi_load(PNGfileName.c_str(), &pic._w, &pic._h, &comp, static_cast<int>(pic._type));
 		if (pic._data == nullptr) {
-			CONSOLE_LOG_ERROR("[ResourceManager] Can't load PNG");
+			CONSOLE_LOG_ERROR("[ResourceManager] Can't load PNG {0}", PNGname);
 		}
 		if (comp != 4) {
-			CONSOLE_LOG_ERROR("[ResourceManager] Texture is not RGBA ( level = {0} )", comp);
+			CONSOLE_LOG_WARN("[ResourceManager] Texture {0} is not RGBA ( level = {1} )", PNGname, comp);
+			pic._type = PNGtype::RGB;
 		}
 		return pic;
 	}

@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.12)
 set(CORE_NAME MineTestCore)
 
 set(ENGINE_PUBLIC_INCLUDES
-    includes/MineTestCore/Window.hpp
-    includes/MineTestCore/Log.hpp
     includes/MineTestCore/Application.hpp
     includes/MineTestCore/Events.hpp
+    includes/MineTestCore/Window.hpp
+    includes/MineTestCore/Log.hpp
     includes/MineTestCore/myglad.hpp
     includes/MineTestCore/ResourceManager/ResourceManager.hpp
     includes/MineTestCore/ResourceManager/stb_image.hpp
@@ -23,7 +23,6 @@ set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Graphics/Texture.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
-    
 )
 
 set(ENGINE_ALL_INCLUDES
