@@ -14,6 +14,7 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Graphics/Texture.hpp
     includes/MineTestCore/Graphics/PNG.hpp
     includes/MineTestCore/Graphics/Camera.hpp
+    includes/MineTestCore/Graphics/Mesh.hpp
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
@@ -23,6 +24,7 @@ set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Graphics/Shader.cpp
     src/MineTestCore/Graphics/Texture.cpp
     src/MineTestCore/Graphics/Camera.cpp
+    src/MineTestCore/Graphics/Mesh.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
 )

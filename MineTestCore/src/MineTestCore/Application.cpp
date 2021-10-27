@@ -10,6 +10,7 @@
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
 #include <MineTestCore/Graphics/Shader.hpp>
 #include <MineTestCore/Graphics/Texture.hpp>
+#include <MineTestCore/Graphics/Mesh.hpp>
 
 // test glm
 #include <glm/glm.hpp>
@@ -46,6 +47,10 @@ namespace MineTest {
             1.0f, -1.0f, 0.0f, 1.0f, 0.0f
         };
 
+        int attrs[] = {
+            3, 2, 0
+        };
+
         // Shader
         Shader* shader = make_shader("main.glslv", "main.glslf");
         if (shader == nullptr) {
@@ -58,20 +63,7 @@ namespace MineTest {
         }
 
         // create VAO
-        GLuint VAO, VBO;
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // position
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-
-        glBindVertexArray(0);
+        Mesh* mesh = new Mesh(vertices, 6, attrs);
 
         
         glad::glClearColor(0.7f, 0.7f, 0.0f, 1.0f);
@@ -149,10 +141,7 @@ namespace MineTest {
             shader->uniformMatrix("model", model);
             shader->uniformMatrix("projview", (camera->getProjection())*(camera->getView()));
             texture->bind();
-
-            glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glBindVertexArray(0);
+            mesh->draw(GL_TRIANGLES);
 
             /* Swap front and back buffers */
             MineTest::Window::swapBuffers();
@@ -162,6 +151,7 @@ namespace MineTest {
 
         }
 
+        delete mesh;
         delete shader;
         delete texture;
         delete camera;
