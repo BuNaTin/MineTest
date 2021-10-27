@@ -13,6 +13,7 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Graphics/Shader.hpp
     includes/MineTestCore/Graphics/Texture.hpp
     includes/MineTestCore/Graphics/PNG.hpp
+    includes/MineTestCore/Graphics/Camera.hpp
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
@@ -21,6 +22,7 @@ set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/ResourceManager/ResourceManager.cpp
     src/MineTestCore/Graphics/Shader.cpp
     src/MineTestCore/Graphics/Texture.cpp
+    src/MineTestCore/Graphics/Camera.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
 )
@@ -63,3 +65,9 @@ add_subdirectory(
     ${CMAKE_CURRENT_BINARY_DIR}/glad
 )
 target_link_libraries(${CORE_NAME} PRIVATE glad)
+
+add_subdirectory(
+    ../external/glm
+    ${CMAKE_CURRENT_BINARY_DIR}/glm
+)
+target_link_libraries(${CORE_NAME} PRIVATE glm)

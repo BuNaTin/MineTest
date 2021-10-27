@@ -5,10 +5,15 @@
 
 #include <MineTestCore/Window.hpp>
 #include <MineTestCore/Events.hpp>
+#include <MineTestCore/Graphics/Camera.hpp>
 #include <MineTestCore/Log.hpp>
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
 #include <MineTestCore/Graphics/Shader.hpp>
 #include <MineTestCore/Graphics/Texture.hpp>
+
+// test glm
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 
 namespace MineTest {
@@ -18,9 +23,10 @@ namespace MineTest {
 
         ResourceManager::initialization(exe_folder);
 
+
 		Window::initialization(w, h, title);
-        Events::initialization();
         glad::init();
+        Events::initialization();
 
         CONSOLE_LOG_INFO("[Application] End initialization");
         
@@ -65,9 +71,6 @@ namespace MineTest {
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
 
-        
-
-
         glBindVertexArray(0);
 
         
@@ -76,29 +79,75 @@ namespace MineTest {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        Camera* camera = new Camera(glm::vec3(0, 0, 2), glm::radians(70.0f));
+
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+
+        float lastTime = glfwGetTime();
+        float delta = 0.0f;
+        const float speed = 3.0f;
+
+        float camX = 0.0f;
+        float camY = 0.0f;
 
         while (!MineTest::Window::shouldClose())
         {
+            float currentTime = glfwGetTime();
+            delta = currentTime - lastTime;
+            lastTime = currentTime;
+
             /* Render here */
             glad::glClear();
 
-            /* Poll for and process events */
-            Events::poll();
 
             this->doing();
 
             if (Events::pressed(GLFW_KEY_ESCAPE)) {
                 Window::shouldClose(true);
             }
-            
-            if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
-                glad::glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
+            if (Events::jpressed(GLFW_KEY_TAB)) {
+                Events::toogleCursor();
+            }
+
+            if (Events::pressed(GLFW_KEY_S)) {
+                camera->addPosition(-camera->getFront() * delta * speed);
+            }
+            if (Events::pressed(GLFW_KEY_W)) {
+                camera->addPosition(camera->getFront() * delta * speed);
+            }
+            if (Events::pressed(GLFW_KEY_D)) {
+                camera->addPosition(camera->getRight() * delta * speed);
+            }
+            if (Events::pressed(GLFW_KEY_A)) {
+                camera->addPosition(-camera->getRight() * delta * speed);
+            }
+            if (Events::pressed(GLFW_KEY_SPACE)) {
+                //camera->addY(speed * delta);
+            }
+            if (Events::pressed(GLFW_KEY_LEFT_CONTROL)) {
+                //camera->addY(-speed * delta);
+            }
+            if (Events::m_cursor_locked) {
+                camY -= (Events::m_deltaY / Window::getH());
+                camX -= (Events::m_deltaX / Window::getW());
+                if (camY < -glm::radians(89.0f)) {
+                    camY = -glm::radians(89.0f);
+                }
+                if (camY > glm::radians(89.0f)) {
+                    camY = glm::radians(89.0f);
+                }
+
+                camera->resetRotation();
+                camera->rotate(camY, camX, 0);
             }
 
             glClear(GL_COLOR_BUFFER_BIT);
 
             // DRAW VAO
             shader->use();
+            shader->uniformMatrix("model", model);
+            shader->uniformMatrix("projview", (camera->getProjection())*(camera->getView()));
             texture->bind();
 
             glBindVertexArray(VAO);
@@ -108,11 +157,14 @@ namespace MineTest {
             /* Swap front and back buffers */
             MineTest::Window::swapBuffers();
 
+            /* Poll for and process events */
+            Events::poll();
 
         }
 
         delete shader;
         delete texture;
+        delete camera;
         glDeleteBuffers(1, &VBO);
         glDeleteVertexArrays(1, &VAO);
 

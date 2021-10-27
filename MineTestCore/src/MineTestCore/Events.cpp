@@ -9,7 +9,9 @@
 
 #include <iostream>
 
+#include <MineTestCore/myglad.hpp>
 #include <GLFW/glfw3.h>
+
 
 
 namespace MineTest {
@@ -22,11 +24,15 @@ namespace MineTest {
 	float Events::m_x = 0.0f;
 	float Events::m_y = 0.0f;
 	bool Events::m_cursor_locked = false;
+	bool Events::m_cursor_started = false;
 
 	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-		if (!Events::m_cursor_locked) {
+		if (!Events::m_cursor_started) {
 			Events::m_deltaX += static_cast<float>(xpos - Events::m_x);
 			Events::m_deltaY += static_cast<float>(ypos - Events::m_y);
+		}
+		else {
+			Events::m_cursor_started = true;
 		}
 		Events::m_x = static_cast<float>(xpos);
 		Events::m_y = static_cast<float>(ypos);
@@ -54,6 +60,12 @@ namespace MineTest {
 		}
 	}
 
+	void window_size_callback(GLFWwindow* window, int width, int height) {
+		glViewport(0, 0, width, height);
+		Window::setW(width);
+		Window::setH(height);
+	}
+
 	int Events::initialization() {
 
 		// GLFWwindow* window = Window::window;
@@ -68,6 +80,7 @@ namespace MineTest {
 		glfwSetKeyCallback(Window::get(), key_callback);
 		glfwSetMouseButtonCallback(Window::get(), mouse_button_callback);
 		glfwSetCursorPosCallback(Window::get(), cursor_position_callback);
+		glfwSetWindowSizeCallback(Window::get(), window_size_callback);
 		// end setting callbacks
 
 		CONSOLE_LOG_INFO("[Events] Initialization done");
@@ -86,6 +99,11 @@ namespace MineTest {
 
 
 		glfwPollEvents();
+	}
+
+	void Events::toogleCursor() {
+		m_cursor_locked = !m_cursor_locked;
+		Window::setCursorMode(m_cursor_locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 	}
 
 	bool Events::pressed(int keycode) {

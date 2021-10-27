@@ -10,6 +10,8 @@
 #include <MineTestCore/Log.hpp>
 #include <GLFW/glfw3.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace MineTest {
 
     Shader::Shader(unsigned int id):m_id(id) {
@@ -21,8 +23,14 @@ namespace MineTest {
     void Shader::use() {
         glUseProgram(m_id);
     }
+
+    void Shader::uniformMatrix(const std::string& name, glm::mat4 matrix) {
+        GLuint transformLoc = glGetUniformLocation(m_id, name.c_str());
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+    }
+
     
-    Shader* make_shader(const std::string vertexFile, const std::string fragmentFile) {
+    Shader* make_shader(const std::string& vertexFile, const std::string& fragmentFile) {
         std::string vertexCode = ResourceManager::read_shader(vertexFile);
         std::string fragmentCode = ResourceManager::read_shader(fragmentFile);
 

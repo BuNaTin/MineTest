@@ -19,7 +19,7 @@ namespace MineTest {
 		static bool jpressed(int keycode);
 		static bool clicked(int buttom);
 		static bool jclicked(int buttom);
-
+		static void toogleCursor();
 	public:
 		static bool* m_keys;
 		static uint* m_frames;
@@ -29,6 +29,7 @@ namespace MineTest {
 		static float m_x;
 		static float m_y;
 		static bool m_cursor_locked;
+		static bool m_cursor_started;
 
 	public:
 		static const int _MOUSE_BUTTONS_POS = 1024;
