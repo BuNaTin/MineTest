@@ -15,6 +15,10 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/Graphics/PNG.hpp
     includes/MineTestCore/Graphics/Camera.hpp
     includes/MineTestCore/Graphics/Mesh.hpp
+    includes/MineTestCore/Graphics/VoxelRenderer.hpp
+    includes/MineTestCore/Voxels/Voxel.hpp
+    includes/MineTestCore/Voxels/Chunk.hpp
+    includes/MineTestCore/Voxels/Chunks.hpp
 )
 set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Window.cpp
@@ -25,6 +29,9 @@ set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/Graphics/Texture.cpp
     src/MineTestCore/Graphics/Camera.cpp
     src/MineTestCore/Graphics/Mesh.cpp
+    src/MineTestCore/Graphics/VoxelRenderer.cpp
+    src/MineTestCore/Voxels/Chunk.cpp
+    src/MineTestCore/Voxels/Chunks.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
 )

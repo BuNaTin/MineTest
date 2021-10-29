@@ -5,12 +5,18 @@
 
 #include <MineTestCore/Window.hpp>
 #include <MineTestCore/Events.hpp>
-#include <MineTestCore/Graphics/Camera.hpp>
 #include <MineTestCore/Log.hpp>
+
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
+
+#include <MineTestCore/Graphics/Camera.hpp>
 #include <MineTestCore/Graphics/Shader.hpp>
 #include <MineTestCore/Graphics/Texture.hpp>
 #include <MineTestCore/Graphics/Mesh.hpp>
+#include <MineTestCore/Graphics/VoxelRenderer.hpp>
+
+#include <MineTestCore/Voxels/Chunk.hpp>
+#include <MineTestCore/Voxels/Chunks.hpp>
 
 // test glm
 #include <glm/glm.hpp>
@@ -34,7 +40,7 @@ namespace MineTest {
         return 0;
 	}
 
-	int Application::start() {
+    int Application::start() {
 
         float vertices[] = {
             // x     y     z     u     v
@@ -47,8 +53,21 @@ namespace MineTest {
             1.0f, -1.0f, 0.0f, 1.0f, 0.0f
         };
 
+        float cursor[] = {
+            // x     y   
+            -0.01f, -0.01f,
+            0.01f, 0.01f,
+
+            -0.01f, 0.01f,
+            0.01f, -0.01f,
+        };
+
         int attrs[] = {
             3, 2, 0
+        };
+
+        int cursorAttrs[] = {
+            2, 0
         };
 
         // Shader
@@ -56,29 +75,41 @@ namespace MineTest {
         if (shader == nullptr) {
             CONSOLE_LOG_ERROR("[Shader] Wrong shader program");
         }
+
+        Shader* cursorShader = make_shader("cursor.glslv", "cursor.glslf");
+        if (cursorShader == nullptr) {
+            CONSOLE_LOG_ERROR("[Shader] Wrong cursorShader program");
+        }
         // Texture
         Texture* texture = make_texture("2.png");
         if (texture == nullptr) {
             CONSOLE_LOG_ERROR("[Texture] Wrong texture");
         }
 
-        // create VAO
-        Mesh* mesh = new Mesh(vertices, 6, attrs);
+        Chunks* chunks = new Chunks(3, 1, 4);
+        VoxelRenderer renderer(1024 * 1024 * 8);
+        Mesh** meshes = new Mesh * [chunks->m_volume];
+        for (uint32_t i = 0; i < chunks->m_volume; i++) {
+            meshes[i] = nullptr;
+        }
 
         
-        glad::glClearColor(0.7f, 0.7f, 0.0f, 1.0f);
+        Mesh* cursorMesh = new Mesh(cursor, 4, cursorAttrs);
+        
+        glad::glClearColor(0.5f, 0.5f, 0.75f, 1.0f);
         //
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         Camera* camera = new Camera(glm::vec3(0, 0, 2), glm::radians(70.0f));
 
-        glm::mat4 model(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
         float lastTime = glfwGetTime();
         float delta = 0.0f;
-        const float speed = 3.0f;
+        const float speed = 6.0f;
 
         float camX = 0.0f;
         float camY = 0.0f;
@@ -115,10 +146,10 @@ namespace MineTest {
                 camera->addPosition(-camera->getRight() * delta * speed);
             }
             if (Events::pressed(GLFW_KEY_SPACE)) {
-                //camera->addY(speed * delta);
+                camera->addY(speed * delta);
             }
             if (Events::pressed(GLFW_KEY_LEFT_CONTROL)) {
-                //camera->addY(-speed * delta);
+                camera->addY(-speed * delta);
             }
             if (Events::m_cursor_locked) {
                 camY -= (Events::m_deltaY / Window::getH());
@@ -134,14 +165,71 @@ namespace MineTest {
                 camera->rotate(camY, camX, 0);
             }
 
-            glClear(GL_COLOR_BUFFER_BIT);
+            // raycast
+            {
+                glm::vec3 end;
+                glm::vec3 norm;
+                glm::vec3 iend;
+                Voxel* vox = chunks->rayCast(camera->getPosition(), camera->getFront(), 10.0f, end, norm, iend);
+                if (vox != nullptr) {
+                    if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
+                        chunks->set(int(iend.x), int(iend.y), int(iend.z), 0);
+                    }
+                    if (Events::jclicked(GLFW_MOUSE_BUTTON_2)) {
+                        chunks->set(int(iend.x) + int(norm.x), int(iend.y) + int(norm.y), int(iend.z) + int(norm.z), 1);
+                    }
+                }
+            }
+            
+            Chunk* closes[27 /* (3 * 3 * 3) */];
+            for (int i = 0; i < chunks->m_volume; i++) {
+                Chunk* chunk = chunks->m_chunks[i];
+                if (!chunk->m_modified) {
+                    continue;
+                }
+                chunk->m_modified = false;
+                if (meshes[i] != nullptr) {
+                    delete meshes[i];
+                }
+
+                for (int j = 0; j < 27; j++) {
+                    closes[j] = nullptr;
+                }
+                for (uint32_t j = 0; j < chunks->m_volume; j++) {
+                    Chunk* other = chunks->m_chunks[j];
+
+                    int ox = other->m_x - chunk->m_x;
+                    int oy = other->m_y - chunk->m_y;
+                    int oz = other->m_z - chunk->m_z;
+
+                    if (abs(ox) > 1 || abs(oy) > 1 || abs(oz) > 1) {
+                        continue; //
+                    }
+
+                    ++ox;
+                    ++oy;
+                    ++oz;
+                    closes[(oy * 3 + oz) * 3 + ox] = other;
+                }
+
+                meshes[i] = renderer.render(chunk, (const Chunk**)closes);
+            }
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // DRAW VAO
             shader->use();
-            shader->uniformMatrix("model", model);
             shader->uniformMatrix("projview", (camera->getProjection())*(camera->getView()));
             texture->bind();
-            mesh->draw(GL_TRIANGLES);
+            glm::mat4 model(1.0f);
+            for (uint32_t i = 0; i < chunks->m_volume; i++) {
+                model = glm::translate(glm::mat4(1.0f), glm::vec3(chunks->m_chunks[i]->m_x * CHUNK_W + 0.5f, chunks->m_chunks[i]->m_y * CHUNK_H + 0.5f, chunks->m_chunks[i]->m_z * CHUNK_D + 0.5f)  );
+
+                shader->uniformMatrix("model", model);
+                meshes[i]->draw(GL_TRIANGLES);
+            }
+            cursorShader->use();
+            cursorMesh->draw(GL_LINES);
 
             /* Swap front and back buffers */
             MineTest::Window::swapBuffers();
@@ -151,12 +239,12 @@ namespace MineTest {
 
         }
 
-        delete mesh;
+        delete cursorMesh;
         delete shader;
+        delete cursorShader;
         delete texture;
         delete camera;
-        glDeleteBuffers(1, &VBO);
-        glDeleteVertexArrays(1, &VAO);
+        delete chunks;
 
 
         return 0;

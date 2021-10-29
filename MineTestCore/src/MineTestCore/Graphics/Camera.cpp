@@ -23,6 +23,14 @@ namespace MineTest {
 	void Camera::addPosition(glm::vec3 alpha) {
 		m_position += alpha;
 	}
+
+	void Camera::addY(float a) {
+		m_position.y += a;
+	}
+
+	glm::vec3 Camera::getPosition() const {
+		return m_position;
+	}
 	glm::vec3 Camera::getFront() const {
 		return m_front;
 	}

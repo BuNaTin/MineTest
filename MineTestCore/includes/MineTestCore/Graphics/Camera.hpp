@@ -15,8 +15,11 @@ namespace MineTest {
 		void resetRotation();
 
 		void addPosition(glm::vec3);
+		void addY(float a);
+
 		glm::vec3 getRight() const;
 		glm::vec3 getFront() const;
+		glm::vec3 getPosition() const;
 
 
 		void rotate(float x, float y, float z);
