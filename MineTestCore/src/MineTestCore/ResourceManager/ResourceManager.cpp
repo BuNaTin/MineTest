@@ -1,7 +1,7 @@
 
 #include "../includes/MineTestCore/ResourceManager/ResourceManager.hpp"
 
-#include <MineTestCore/Log.hpp>
+#include <MineTestCore/System/Log.hpp>
 
 
 #include <MineTestCore/Graphics/PNG.hpp>
@@ -78,4 +78,34 @@ namespace MineTest{
 		}
 		return pic;
 	}
+	
+	bool ResourceManager::saveWorld(const char buffer[], size_t size, const std::string& world_name)
+	{
+		std::string fileName = m_currentFolder + "\\res\\worlds\\" + world_name;
+		std::ofstream worldFile(fileName);
+		if (!worldFile.is_open()) {
+			CONSOLE_LOG_CRITICAL("[World save] Can't open file {0}", world_name);
+			return false;
+		}
+		std::ostringstream output;
+		for (size_t i = 0; i < size; i++) {
+			output << buffer[i];
+		}
+		worldFile << output.str();
+
+		return true;
+	}
+
+	void MineTest::ResourceManager::getWorld(char* buffer, size_t size, const std::string& world_name)
+	{
+		std::string fileName = m_currentFolder + "\\res\\worlds\\" + world_name;
+		std::ifstream worldFile(fileName);
+		if (!worldFile.is_open()) {
+			CONSOLE_LOG_CRITICAL("[World save] Can't open file {0}", world_name);
+			return;
+		}
+		worldFile.read(buffer, size);
+
+	}
+
 }

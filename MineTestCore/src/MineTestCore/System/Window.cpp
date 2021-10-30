@@ -1,14 +1,14 @@
 
-#include <../includes/MineTestCore/Window.hpp>
+#include <../includes/MineTestCore/System/Window.hpp>
 
 #include <GLFW/glfw3.h>
-#include <../includes/MineTestCore/Log.hpp>
+#include <../includes/MineTestCore/System/Log.hpp>
 
 namespace MineTest {
 
     GLFWwindow* Window::m_pwindow = nullptr;
-    int Window::m_w = 640;
-    int Window::m_h = 480;
+    int Window::m_w = 1920;
+    int Window::m_h = 1080;
 
 
 	int Window::initialization(int w, int h, const char title[]) {

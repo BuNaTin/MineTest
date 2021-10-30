@@ -15,6 +15,9 @@ namespace MineTest {
 		size_t m_volume;
 		unsigned int m_w, m_h, m_d;
 
+		void write(unsigned char* dest);
+		void read(unsigned char* dest);
+
 		Voxel* get(int x, int y, int z);
 		Chunk* getChunk(int x, int y, int z);
 		void set(int x, int y, int z, int id);

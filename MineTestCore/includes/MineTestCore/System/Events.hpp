@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <MineTestCore/Window.hpp>
+#include <MineTestCore/System/Window.hpp>
 
 namespace MineTest {
 

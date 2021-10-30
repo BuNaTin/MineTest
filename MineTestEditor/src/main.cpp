@@ -1,5 +1,5 @@
 
-#include <MineTestCore/Application.hpp>
+#include <MineTestCore/System/Application.hpp>
 
 class MyApp : public MineTest::Application {
 public:

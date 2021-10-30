@@ -26,6 +26,24 @@ namespace MineTest {
 		delete[] m_chunks;
 	}
 
+	void Chunks::write(unsigned char* dest) {
+		size_t index = 0;
+		for (size_t i = 0; i < m_volume; i++) {
+			for (size_t j = 0; j < CHUNK_VOL; j++, index++) {
+				dest[index] = m_chunks[i]->voxels[j].id;
+			}
+		}
+	}
+	void Chunks::read(unsigned char* dest)
+	{
+		size_t index = 0;
+		for (size_t i = 0; i < m_volume; i++) {
+			for (size_t j = 0; j < CHUNK_VOL; j++, index++) {
+				m_chunks[i]->voxels[j].id = dest[index];
+			}
+			m_chunks[i]->m_modified = true;
+		}
+	}
 	Voxel* Chunks::get(int x, int y, int z) {
 		int cx = x / CHUNK_W;
 		int cy = y / CHUNK_H;

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <MineTestCore/Log.hpp>
+#include <MineTestCore/System/Log.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

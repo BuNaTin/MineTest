@@ -3,35 +3,41 @@ cmake_minimum_required(VERSION 3.12)
 set(CORE_NAME MineTestCore)
 
 set(ENGINE_PUBLIC_INCLUDES
-    includes/MineTestCore/Application.hpp
-    includes/MineTestCore/Events.hpp
-    includes/MineTestCore/Window.hpp
-    includes/MineTestCore/Log.hpp
-    includes/MineTestCore/myglad.hpp
+    includes/MineTestCore/System/Application.hpp
+    includes/MineTestCore/System/Events.hpp
+    includes/MineTestCore/System/Window.hpp
+    includes/MineTestCore/System/Log.hpp
     includes/MineTestCore/ResourceManager/ResourceManager.hpp
     includes/MineTestCore/ResourceManager/stb_image.hpp
+    includes/MineTestCore/Graphics/myglad.hpp
     includes/MineTestCore/Graphics/Shader.hpp
     includes/MineTestCore/Graphics/Texture.hpp
     includes/MineTestCore/Graphics/PNG.hpp
     includes/MineTestCore/Graphics/Camera.hpp
     includes/MineTestCore/Graphics/Mesh.hpp
     includes/MineTestCore/Graphics/VoxelRenderer.hpp
+    includes/MineTestCore/Graphics/LineBatch.hpp
     includes/MineTestCore/Voxels/Voxel.hpp
     includes/MineTestCore/Voxels/Chunk.hpp
     includes/MineTestCore/Voxels/Chunks.hpp
+    includes/MineTestCore/Lighting/Lightmap.hpp
+    includes/MineTestCore/Lighting/LightSolver.hpp
 )
 set(ENGINE_PRIVATE_SOURCES
-    src/MineTestCore/Window.cpp
-    src/MineTestCore/Application.cpp
-    src/MineTestCore/Events.cpp
+    src/MineTestCore/System/Window.cpp
+    src/MineTestCore/System/Application.cpp
+    src/MineTestCore/System/Events.cpp
     src/MineTestCore/ResourceManager/ResourceManager.cpp
     src/MineTestCore/Graphics/Shader.cpp
     src/MineTestCore/Graphics/Texture.cpp
     src/MineTestCore/Graphics/Camera.cpp
     src/MineTestCore/Graphics/Mesh.cpp
     src/MineTestCore/Graphics/VoxelRenderer.cpp
+    src/MineTestCore/Graphics/LineBatch.cpp
     src/MineTestCore/Voxels/Chunk.cpp
     src/MineTestCore/Voxels/Chunks.cpp
+    src/MineTestCore/Lighting/Lightmap.cpp
+    src/MineTestCore/Lighting/LightSolver.cpp
 )
 set(ENGINE_PRIVATE_INCLUDES
 )
@@ -41,6 +47,10 @@ set(ENGINE_ALL_INCLUDES
     ${ENGINE_PRIVATE_INCLUDES}
     ${ENGINE_PRIVATE_SOURCES}
 ) 
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES 
+    ${ENGINE_ALL_INCLUDES}
+)
 
 add_library(${CORE_NAME} 
     STATIC 

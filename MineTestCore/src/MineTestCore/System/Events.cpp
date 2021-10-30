@@ -1,15 +1,15 @@
 
-#include "../includes/MineTestCore/Events.hpp"
+#include "../includes/MineTestCore/System/Events.hpp"
 
-#include <MineTestCore/Log.hpp>
-#include <MineTestCore/Window.hpp>
+#include <MineTestCore/System/Log.hpp>
+#include <MineTestCore/System/Window.hpp>
 
 // for memset()
 #include <cstring>
 
 #include <iostream>
 
-#include <MineTestCore/myglad.hpp>
+#include <MineTestCore/Graphics/myglad.hpp>
 #include <GLFW/glfw3.h>
 
 

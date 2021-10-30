@@ -3,7 +3,7 @@
 
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
 
-#include <MineTestCore/myglad.hpp>
+#include <MineTestCore/Graphics/myglad.hpp>
 
 namespace MineTest {
 
@@ -31,6 +31,8 @@ namespace MineTest {
 			GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)pic._data);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if (texture == 0) {

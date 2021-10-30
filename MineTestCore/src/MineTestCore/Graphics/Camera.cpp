@@ -1,7 +1,7 @@
 
 #include "../includes/MineTestCore/Graphics/Camera.hpp"
 
-#include <MineTestCore/Window.hpp>
+#include <MineTestCore/System/Window.hpp>
 #include <glm/ext.hpp>
 
 namespace MineTest {

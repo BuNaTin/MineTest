@@ -5,9 +5,9 @@
 #include <iostream>
 #include <fstream>
 
-#include <MineTestCore/myglad.hpp>
+#include <MineTestCore/Graphics/myglad.hpp>
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
-#include <MineTestCore/Log.hpp>
+#include <MineTestCore/System/Log.hpp>
 #include <GLFW/glfw3.h>
 
 #include <glm/gtc/type_ptr.hpp>

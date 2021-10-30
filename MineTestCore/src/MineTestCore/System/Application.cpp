@@ -1,19 +1,20 @@
 
-#include "../includes/MineTestCore/Application.hpp"
+#include "../includes/MineTestCore/System/Application.hpp"
 
-#include <MineTestCore/myglad.hpp>
 
-#include <MineTestCore/Window.hpp>
-#include <MineTestCore/Events.hpp>
-#include <MineTestCore/Log.hpp>
+#include <MineTestCore/System/Window.hpp>
+#include <MineTestCore/System/Events.hpp>
+#include <MineTestCore/System/Log.hpp>
 
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
 
+#include <MineTestCore/Graphics/myglad.hpp>
 #include <MineTestCore/Graphics/Camera.hpp>
 #include <MineTestCore/Graphics/Shader.hpp>
 #include <MineTestCore/Graphics/Texture.hpp>
 #include <MineTestCore/Graphics/Mesh.hpp>
 #include <MineTestCore/Graphics/VoxelRenderer.hpp>
+#include <MineTestCore/Graphics/LineBatch.hpp>
 
 #include <MineTestCore/Voxels/Chunk.hpp>
 #include <MineTestCore/Voxels/Chunks.hpp>
@@ -42,17 +43,6 @@ namespace MineTest {
 
     int Application::start() {
 
-        float vertices[] = {
-            // x     y     z     u     v
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f
-        };
-
         float cursor[] = {
             // x     y   
             -0.01f, -0.01f,
@@ -70,41 +60,48 @@ namespace MineTest {
             2, 0
         };
 
-        // Shader
+        // Shaders
         Shader* shader = make_shader("main.glslv", "main.glslf");
         if (shader == nullptr) {
             CONSOLE_LOG_ERROR("[Shader] Wrong shader program");
         }
-
         Shader* cursorShader = make_shader("cursor.glslv", "cursor.glslf");
         if (cursorShader == nullptr) {
             CONSOLE_LOG_ERROR("[Shader] Wrong cursorShader program");
         }
+        Shader* linesShader = make_shader("lines.glslv", "lines.glslf");
+        if (cursorShader == nullptr) {
+            CONSOLE_LOG_ERROR("[Shader] Wrong linesShader program");
+        }
+
         // Texture
         Texture* texture = make_texture("2.png");
         if (texture == nullptr) {
             CONSOLE_LOG_ERROR("[Texture] Wrong texture");
         }
 
-        Chunks* chunks = new Chunks(3, 1, 4);
+        //  load world
+        Chunks* chunks = new Chunks(16, 1, 16);
         VoxelRenderer renderer(1024 * 1024 * 8);
+        LineBatch* lineBatch = new LineBatch(1024);
+        // init meshes
         Mesh** meshes = new Mesh * [chunks->m_volume];
         for (uint32_t i = 0; i < chunks->m_volume; i++) {
             meshes[i] = nullptr;
         }
 
-        
+        // make cursor
         Mesh* cursorMesh = new Mesh(cursor, 4, cursorAttrs);
         
+        // gl settings
         glad::glClearColor(0.5f, 0.5f, 0.75f, 1.0f);
-        //
-
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        Camera* camera = new Camera(glm::vec3(0, 0, 2), glm::radians(70.0f));
+        // Init camera
+        Camera* camera = new Camera(glm::vec3(32, 10, 32), glm::radians(70.0f));
 
 
         float lastTime = glfwGetTime();
@@ -131,6 +128,18 @@ namespace MineTest {
             }
             if (Events::jpressed(GLFW_KEY_TAB)) {
                 Events::toogleCursor();
+            }
+            if (Events::jpressed(GLFW_KEY_F1)) {
+                unsigned char* buffer = new unsigned char[chunks->m_volume * CHUNK_VOL];
+                chunks->write(buffer);
+                ResourceManager::saveWorld((const char*)buffer, chunks->m_volume * CHUNK_VOL, "1.txt");
+                delete[] buffer;
+            }
+            if (Events::jpressed(GLFW_KEY_F2)) {
+                unsigned char* buffer = new unsigned char[chunks->m_volume * CHUNK_VOL];
+                ResourceManager::getWorld((char*)buffer, chunks->m_volume* CHUNK_VOL, "1.txt");
+                chunks->read(buffer);
+                delete[] buffer;
             }
 
             if (Events::pressed(GLFW_KEY_S)) {
@@ -172,6 +181,8 @@ namespace MineTest {
                 glm::vec3 iend;
                 Voxel* vox = chunks->rayCast(camera->getPosition(), camera->getFront(), 10.0f, end, norm, iend);
                 if (vox != nullptr) {
+                    lineBatch->box(iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.01f, 1.01f, 1.01f, 0,0,0,1);
+
                     if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
                         chunks->set(int(iend.x), int(iend.y), int(iend.z), 0);
                     }
@@ -212,7 +223,7 @@ namespace MineTest {
                     closes[(oy * 3 + oz) * 3 + ox] = other;
                 }
 
-                meshes[i] = renderer.render(chunk, (const Chunk**)closes);
+                meshes[i] = renderer.render(chunk, (const Chunk**)closes, true);
             }
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -231,6 +242,19 @@ namespace MineTest {
             cursorShader->use();
             cursorMesh->draw(GL_LINES);
 
+
+            linesShader->use();
+            linesShader->uniformMatrix("projview", (camera->getProjection()) * (camera->getView()));
+            lineBatch->line(
+                1.0f, 1.0f, 1.0f,
+                1.0f, 10.0f, 1.0f,
+
+                1.0f, 1.0f, 0.0f, 1.0f
+            );
+            glLineWidth(2.0f);
+            lineBatch->render();
+
+
             /* Swap front and back buffers */
             MineTest::Window::swapBuffers();
 
@@ -245,6 +269,7 @@ namespace MineTest {
         delete texture;
         delete camera;
         delete chunks;
+        delete lineBatch;
 
 
         return 0;
