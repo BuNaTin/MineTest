@@ -21,6 +21,8 @@ namespace MineTest {
 		glm::vec3 getFront() const;
 		glm::vec3 getPosition() const;
 
+		float oldX = 0.0f;
+		float oldY = 0.0f;
 
 		void rotate(float x, float y, float z);
 	private:

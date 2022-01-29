@@ -1,10 +1,10 @@
 
 #pragma once
 
-
-
-
 namespace MineTest {
+
+    class Meshes;
+
     const int CHUNK_W = 16;
     const int CHUNK_H = 16;
     const int CHUNK_D = 16;

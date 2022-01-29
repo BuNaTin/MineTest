@@ -76,4 +76,7 @@ namespace MineTest {
 		line(x + w, y + h, z - d, x + w, y + h, z + d, r, g, b, a);
 	}
 
+	void LineBatch::matchBlock(float x, float y, float z) {
+		this->box(x + 0.5f, y + 0.5f, z + 0.5f, 1.01f, 1.01f, 1.01f, 0, 0, 0, 1);
+	}
 }

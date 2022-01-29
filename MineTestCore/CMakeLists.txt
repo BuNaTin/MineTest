@@ -7,6 +7,10 @@ set(ENGINE_PUBLIC_INCLUDES
     includes/MineTestCore/System/Events.hpp
     includes/MineTestCore/System/Window.hpp
     includes/MineTestCore/System/Log.hpp
+    includes/MineTestCore/GameLogic/Inventory.hpp
+    includes/MineTestCore/GameLogic/Gamelogic.hpp
+    includes/MineTestCore/Input/Commands.hpp
+    includes/MineTestCore/Input/InputHandler.hpp
     includes/MineTestCore/ResourceManager/ResourceManager.hpp
     includes/MineTestCore/ResourceManager/stb_image.hpp
     includes/MineTestCore/Graphics/myglad.hpp
@@ -27,6 +31,10 @@ set(ENGINE_PRIVATE_SOURCES
     src/MineTestCore/System/Window.cpp
     src/MineTestCore/System/Application.cpp
     src/MineTestCore/System/Events.cpp
+    src/MineTestCore/GameLogic/Inventory.cpp
+    src/MineTestCore/GameLogic/Gamelogic.cpp
+    src/MineTestCore/Input/Commands.cpp
+    src/MineTestCore/Input/InputHandler.cpp
     src/MineTestCore/ResourceManager/ResourceManager.cpp
     src/MineTestCore/Graphics/Shader.cpp
     src/MineTestCore/Graphics/Texture.cpp

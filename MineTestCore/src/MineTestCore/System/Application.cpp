@@ -6,6 +6,9 @@
 #include <MineTestCore/System/Events.hpp>
 #include <MineTestCore/System/Log.hpp>
 
+#include <MineTestCore/Input/Commands.hpp>
+#include <MineTestCore/Input/InputHandler.hpp>
+
 #include <MineTestCore/ResourceManager/ResourceManager.hpp>
 
 #include <MineTestCore/Graphics/myglad.hpp>
@@ -103,6 +106,7 @@ namespace MineTest {
         // Init camera
         Camera* camera = new Camera(glm::vec3(32, 10, 32), glm::radians(70.0f));
 
+        InputHandler input;
 
         float lastTime = glfwGetTime();
         float delta = 0.0f;
@@ -111,14 +115,17 @@ namespace MineTest {
         float camX = 0.0f;
         float camY = 0.0f;
 
+        uint64_t deltacnt = 0;
+        long double totalDelta = 0.0;
+
         while (!MineTest::Window::shouldClose())
         {
             float currentTime = glfwGetTime();
             delta = currentTime - lastTime;
             lastTime = currentTime;
 
-            /* Render here */
-            glad::glClear();
+            totalDelta += delta;
+            deltacnt++;
 
 
             this->doing();
@@ -126,9 +133,8 @@ namespace MineTest {
             if (Events::pressed(GLFW_KEY_ESCAPE)) {
                 Window::shouldClose(true);
             }
-            if (Events::jpressed(GLFW_KEY_TAB)) {
-                Events::toogleCursor();
-            }
+
+            /*
             if (Events::jpressed(GLFW_KEY_F1)) {
                 unsigned char* buffer = new unsigned char[chunks->m_volume * CHUNK_VOL];
                 chunks->write(buffer);
@@ -141,56 +147,32 @@ namespace MineTest {
                 chunks->read(buffer);
                 delete[] buffer;
             }
+            */
 
-            if (Events::pressed(GLFW_KEY_S)) {
-                camera->addPosition(-camera->getFront() * delta * speed);
-            }
-            if (Events::pressed(GLFW_KEY_W)) {
-                camera->addPosition(camera->getFront() * delta * speed);
-            }
-            if (Events::pressed(GLFW_KEY_D)) {
-                camera->addPosition(camera->getRight() * delta * speed);
-            }
-            if (Events::pressed(GLFW_KEY_A)) {
-                camera->addPosition(-camera->getRight() * delta * speed);
-            }
-            if (Events::pressed(GLFW_KEY_SPACE)) {
-                camera->addY(speed * delta);
-            }
-            if (Events::pressed(GLFW_KEY_LEFT_CONTROL)) {
-                camera->addY(-speed * delta);
-            }
-            if (Events::m_cursor_locked) {
-                camY -= (Events::m_deltaY / Window::getH());
-                camX -= (Events::m_deltaX / Window::getW());
-                if (camY < -glm::radians(89.0f)) {
-                    camY = -glm::radians(89.0f);
+
+            {   // Camera Movement
+                std::vector<CameraCommand*> CameraCommands = input.getCameraCommand();
+                for (auto command : CameraCommands) {
+                    command->execute(camera, delta, speed);
                 }
-                if (camY > glm::radians(89.0f)) {
-                    camY = glm::radians(89.0f);
-                }
-
-                camera->resetRotation();
-                camera->rotate(camY, camX, 0);
             }
-
-            // raycast
-            {
-                glm::vec3 end;
+            
+            {   // Modifying world
+                glm::vec3 block;
                 glm::vec3 norm;
-                glm::vec3 iend;
-                Voxel* vox = chunks->rayCast(camera->getPosition(), camera->getFront(), 10.0f, end, norm, iend);
-                if (vox != nullptr) {
-                    lineBatch->box(iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.01f, 1.01f, 1.01f, 0,0,0,1);
-
-                    if (Events::jclicked(GLFW_MOUSE_BUTTON_1)) {
-                        chunks->set(int(iend.x), int(iend.y), int(iend.z), 0);
+                if (chunks->getBlock(camera, block, norm)) {
+                    lineBatch->matchBlock(block.x, block.y, block.z);
+                    if (input.getBreakCommand()/* && gameLogic.canBreak() */) {
+                        chunks->erazeBlock(block/*, inventory*/);
                     }
-                    if (Events::jclicked(GLFW_MOUSE_BUTTON_2)) {
-                        chunks->set(int(iend.x) + int(norm.x), int(iend.y) + int(norm.y), int(iend.z) + int(norm.z), 1);
+                    if (input.getPutCommand()/* && gameLogic.canPut()*/) {
+                        chunks->addBlock(block, norm, 1);
                     }
                 }
             }
+
+            //chunks->update(meshes);
+
             
             Chunk* closes[27 /* (3 * 3 * 3) */];
             for (int i = 0; i < chunks->m_volume; i++) {
@@ -245,12 +227,7 @@ namespace MineTest {
 
             linesShader->use();
             linesShader->uniformMatrix("projview", (camera->getProjection()) * (camera->getView()));
-            lineBatch->line(
-                1.0f, 1.0f, 1.0f,
-                1.0f, 10.0f, 1.0f,
 
-                1.0f, 1.0f, 0.0f, 1.0f
-            );
             glLineWidth(2.0f);
             lineBatch->render();
 
@@ -259,9 +236,12 @@ namespace MineTest {
             MineTest::Window::swapBuffers();
 
             /* Poll for and process events */
-            Events::poll();
+            //Events::poll();
+            input.poll();
 
         }
+
+        CONSOLE_LOG_INFO("[Delta]{0}",totalDelta / deltacnt);
 
         delete cursorMesh;
         delete shader;

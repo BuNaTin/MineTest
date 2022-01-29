@@ -1,5 +1,6 @@
 
 #include "../includes/MineTestCore/Voxels/Chunks.hpp"
+#include "../includes/MineTestCore/Graphics/Camera.hpp"
 
 #include <MineTestCore/Voxels/Chunk.hpp>
 #include <MineTestCore/Voxels/Voxel.hpp>
@@ -179,5 +180,18 @@ namespace MineTest {
 		end.z = pz + t * dz;
 		norm.x = norm.y = norm.z = 0.0f;
 		return nullptr;
+	}
+
+	bool Chunks::getBlock(Camera* camera, glm::vec3& block, glm::vec3& norm) {
+		glm::vec3 end;
+		Voxel* vox = this->rayCast(camera->getPosition(), camera->getFront(), 10.0f, end, norm, block);
+		return vox != nullptr;
+	}
+
+	void Chunks::erazeBlock(const glm::vec3 block) {
+		this->set(int(block.x), int(block.y), int(block.z), 0);
+	}
+	void Chunks::addBlock(const glm::vec3 block, const glm::vec3 norm, const int block_id) {
+		this->set(int(block.x) + int(norm.x), int(block.y) + int(norm.y), int(block.z) + int(norm.z), block_id);
 	}
 }
